@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Calendar as ReactDayPicker } from "react-day-picker";
+import { DayPicker } from "react-day-picker";
 import { format } from "date-fns";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -53,16 +53,16 @@ export function DatePicker({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0">
-        <ReactDayPicker
+        <DayPicker
           mode="single"
           selected={date}
           onSelect={handleSelect}
           disabled={disabled}
-          className="border-none"
+          className={cn("border-none pointer-events-auto")}
         />
       </PopoverContent>
     </Popover>
   );
 }
 
-export { ReactDayPicker as Calendar };
+export { DayPicker as Calendar };

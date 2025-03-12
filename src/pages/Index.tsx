@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TemperatureControl from '@/components/TemperatureControl';
 import FoodInventory from '@/components/FoodInventory';
 import ExpirationTracker from '@/components/ExpirationTracker';
@@ -7,10 +7,26 @@ import RecipeSuggestions from '@/components/RecipeSuggestions';
 import ShoppingList from '@/components/ShoppingList';
 import { foodItems as initialFoodItems, recipes, defaultSettings, FoodItem } from '@/data/mockData';
 import { Snowflake } from "lucide-react";
+import { saveToLocalStorage, loadFromLocalStorage, STORAGE_KEYS } from '@/utils/localStorage';
 
 const Index = () => {
-  const [settings, setSettings] = useState(defaultSettings);
-  const [foodItems, setFoodItems] = useState<FoodItem[]>(initialFoodItems);
+  // Load data from localStorage on initial render, falling back to mock data if not available
+  const [settings, setSettings] = useState(() => 
+    loadFromLocalStorage(STORAGE_KEYS.SETTINGS, defaultSettings)
+  );
+  const [foodItems, setFoodItems] = useState<FoodItem[]>(() => 
+    loadFromLocalStorage(STORAGE_KEYS.FOOD_ITEMS, initialFoodItems)
+  );
+
+  // Save settings to localStorage whenever they change
+  useEffect(() => {
+    saveToLocalStorage(STORAGE_KEYS.SETTINGS, settings);
+  }, [settings]);
+
+  // Save food items to localStorage whenever they change
+  useEffect(() => {
+    saveToLocalStorage(STORAGE_KEYS.FOOD_ITEMS, foodItems);
+  }, [foodItems]);
 
   const handleUpdateSettings = (newSettings: typeof settings) => {
     setSettings(newSettings);

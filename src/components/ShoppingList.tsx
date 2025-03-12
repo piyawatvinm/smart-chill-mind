@@ -1,11 +1,11 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ShoppingCart, Plus, Trash2, Save } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { saveToLocalStorage, loadFromLocalStorage, STORAGE_KEYS } from '@/utils/localStorage';
 
 interface ShoppingItem {
   id: string;
@@ -15,12 +15,18 @@ interface ShoppingItem {
 
 const ShoppingList: React.FC = () => {
   const { toast } = useToast();
-  const [items, setItems] = useState<ShoppingItem[]>([
-    { id: '1', name: 'Milk', completed: false },
-    { id: '2', name: 'Eggs', completed: false },
-    { id: '3', name: 'Bread', completed: false },
-  ]);
+  const [items, setItems] = useState<ShoppingItem[]>(() => 
+    loadFromLocalStorage(STORAGE_KEYS.SHOPPING_LIST, [
+      { id: '1', name: 'Milk', completed: false },
+      { id: '2', name: 'Eggs', completed: false },
+      { id: '3', name: 'Bread', completed: false },
+    ])
+  );
   const [newItem, setNewItem] = useState('');
+
+  useEffect(() => {
+    saveToLocalStorage(STORAGE_KEYS.SHOPPING_LIST, items);
+  }, [items]);
 
   const addItem = () => {
     if (!newItem.trim()) return;
@@ -73,8 +79,6 @@ const ShoppingList: React.FC = () => {
   };
 
   const saveList = () => {
-    // In a real app, this would save to a database or export a file
-    // For demo purposes, we'll just show a toast notification
     toast({
       title: "Shopping List Saved",
       description: `Your shopping list with ${items.length} items has been saved`,

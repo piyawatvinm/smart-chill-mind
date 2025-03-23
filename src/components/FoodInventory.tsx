@@ -83,11 +83,14 @@ const FoodInventory: React.FC<FoodInventoryProps> = ({
   const handleAddItem = () => {
     if (!newItemName.trim()) return;
     
+    // Ensure we're using a proper Date object
+    const expirationDate = new Date(newItemExpiration);
+    
     const newItem: FoodItem = {
       id: Date.now().toString(),
       name: newItemName,
       category: newItemCategory,
-      expirationDate: newItemExpiration,
+      expirationDate: expirationDate,
       quantity: newItemQuantity,
       unit: newItemUnit,
     };
@@ -104,7 +107,9 @@ const FoodInventory: React.FC<FoodInventoryProps> = ({
 
   const getDaysUntilExpiration = (date: Date) => {
     const today = new Date();
-    const diffTime = date.getTime() - today.getTime();
+    // Ensure date is a Date object
+    const expirationDate = date instanceof Date ? date : new Date(date);
+    const diffTime = expirationDate.getTime() - today.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 

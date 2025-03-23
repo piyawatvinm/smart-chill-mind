@@ -14,9 +14,17 @@ const Index = () => {
   const [settings, setSettings] = useState(() => 
     loadFromLocalStorage(STORAGE_KEYS.SETTINGS, defaultSettings)
   );
-  const [foodItems, setFoodItems] = useState<FoodItem[]>(() => 
-    loadFromLocalStorage(STORAGE_KEYS.FOOD_ITEMS, initialFoodItems)
-  );
+  
+  const [foodItems, setFoodItems] = useState<FoodItem[]>(() => {
+    const items = loadFromLocalStorage(STORAGE_KEYS.FOOD_ITEMS, initialFoodItems);
+    // Ensure all loaded items have proper Date objects for expirationDate
+    return items.map(item => ({
+      ...item,
+      expirationDate: item.expirationDate instanceof Date 
+        ? item.expirationDate 
+        : new Date(item.expirationDate)
+    }));
+  });
 
   // Save settings to localStorage whenever they change
   useEffect(() => {
@@ -33,7 +41,14 @@ const Index = () => {
   };
 
   const handleAddFoodItem = (item: FoodItem) => {
-    setFoodItems(prev => [...prev, item]);
+    // Ensure the new item has a proper Date object for expirationDate
+    const newItem = {
+      ...item,
+      expirationDate: item.expirationDate instanceof Date 
+        ? item.expirationDate 
+        : new Date(item.expirationDate)
+    };
+    setFoodItems(prev => [...prev, newItem]);
   };
 
   const handleRemoveFoodItem = (id: string) => {

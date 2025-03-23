@@ -6,6 +6,15 @@ export const STORAGE_KEYS = {
   SHOPPING_LIST: 'smart-refrigerator-shopping-list',
 };
 
+// Date reviver function to convert date strings back to Date objects
+const dateReviver = (_key: string, value: any): any => {
+  // Check if the value is a string with date format
+  if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.*Z$/.test(value)) {
+    return new Date(value);
+  }
+  return value;
+};
+
 // Generic save function
 export const saveToLocalStorage = <T>(key: string, data: T): void => {
   try {
@@ -23,7 +32,8 @@ export const loadFromLocalStorage = <T>(key: string, defaultValue: T): T => {
     if (serializedData === null) {
       return defaultValue;
     }
-    return JSON.parse(serializedData) as T;
+    // Use the date reviver to convert date strings back to Date objects
+    return JSON.parse(serializedData, dateReviver) as T;
   } catch (error) {
     console.error(`Error loading data from localStorage with key ${key}:`, error);
     return defaultValue;

@@ -15,14 +15,26 @@ const ExpirationTracker: React.FC<ExpirationTrackerProps> = ({
   const today = new Date();
   const expiringItems = foodItems
     .filter(item => {
-      const diffTime = item.expirationDate.getTime() - today.getTime();
+      // Ensure item.expirationDate is a Date object
+      const expirationDate = item.expirationDate instanceof Date 
+        ? item.expirationDate 
+        : new Date(item.expirationDate);
+      
+      const diffTime = expirationDate.getTime() - today.getTime();
       const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
       return diffDays <= 5; // Items expiring in 5 days or less
     })
-    .sort((a, b) => a.expirationDate.getTime() - b.expirationDate.getTime());
+    .sort((a, b) => {
+      // Ensure both dates are Date objects for comparison
+      const dateA = a.expirationDate instanceof Date ? a.expirationDate : new Date(a.expirationDate);
+      const dateB = b.expirationDate instanceof Date ? b.expirationDate : new Date(b.expirationDate);
+      return dateA.getTime() - dateB.getTime();
+    });
 
   const getDaysUntilExpiration = (date: Date) => {
-    const diffTime = date.getTime() - today.getTime();
+    // Ensure date is a Date object
+    const expirationDate = date instanceof Date ? date : new Date(date);
+    const diffTime = expirationDate.getTime() - today.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
   };
 
